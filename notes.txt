@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+     <meta charset="UTF-8">
+     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <script src="App.js" defer></script>
+     <!-- <script src="https://unpkg.com/pdf-lib@1.4.0"></script>
+     <script src="https://unpkg.com/downloadjs@1.4.7"></script> -->
+     <link rel="stylesheet" href="app.css">
+     <title>PDF Editor</title>
+</head>
+
+<body>
+
+     <div>
+          <button onclick="addPage()">Add Page</button>
+          <button onclick="removePage()"> Remove page</button>
+     </div>
+
+     <div>
+          <label for="myfile">Select a file:</label>
+          <input type="file" id="myfile" name="myfile"> 
+     </div>
+
+     <!-- Here, the pdf will need to get embedded in the iframe tag -->
+     <iframe id="pdf" style="width: 90%; height: 100vh" src=""></iframe>
+
+     <!-- <div class="container">
+          <div class="container-block">
+               <div class="element-block">
+                    <h1 class="element-header">
+                         Edit your PDF with the same font, colour & size. Easily and quickly.
+                    </h1>
+                    <div class="feature-block">
+                         <div class="button-container">
+                              <button class="feature-button">
+                                   Edit
+                              </button>
+                              <button class="feature-button">
+                                   Text
+                              </button>
+                              <button class="feature-button">
+                                   Sign
+                              </button>
+                              <button class="feature-button">
+                                   Drawing
+                              </button>
+                              <button class="feature-button">
+                                   Eraser
+                              </button>
+                              <button class="feature-button">
+                                   Image
+                              </button>
+                         </div>
+                         <div class="import-file-box">
+                              <span class="import-file-header">
+                                   Import your file to edit it
+                              </span>
+                              <span class="import-file-text">
+                                   Import a PDF
+                              </span>
+                         </div>
+                    </div>
+               </div>
+          </div>
+     </div>  -->
+
+
+
+
+</body>
+
+</html>
+
+// const { degrees, PDFDocument, rgb, StandardFonts } = PDFLib ;
+// let pdfDoc;
+
+// async function loadPdf() {
+//      const url = './new.pdf' ;
+//      const existingPdfBytes = await fetch(url).then(res => res.arrayBuffer())
+
+//      return await PDFDocument.load(existingPdfBytes)
+// }
+
+// async function addPageToDoc(doc) {
+//      const page = doc.addPage()
+//      const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman)
+//      const { width, height } = page.getSize()
+//      const fontSize = 30
+//      page.drawText('Adding a page in JavaScript is awesome!', {
+//           x: 50,
+//           y: height - 4 * fontSize,
+//           size: fontSize,
+//           font: timesRomanFont,
+//           color: rgb(0, 0.53, 0.71),
+//      })
+
+//      return doc;
+// }
+
+// async function removePageToDoc(doc) {
+//      const totalPages = doc.getPageCount()
+//      doc.removePage(totalPages - 1)
+//      return doc;
+// }
+
+// async function saveAndRender(doc) {
+//      const pdfBytes = await doc.save()
+
+//      const pdfDataUri = await doc.saveAsBase64({ dataUri: true });
+//      document.getElementById('pdf').src = pdfDataUri;
+// }
+
+// async function addPage() {
+//      pdfDoc = await addPageToDoc(pdfDoc);
+//      await saveAndRender(pdfDoc);
+// }
+
+// async function removePage() {
+//      pdfDoc = await removePageToDoc(pdfDoc);
+//      await saveAndRender(pdfDoc)
+// }
+
+// loadPdf().then((doc) => {
+//      pdfDoc = doc;
+//      return saveAndRender(pdfDoc);
+// })

@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "pdf2html": "^3.1.0",
     "pspdfkit": "^2022.5.5"
   }
 }

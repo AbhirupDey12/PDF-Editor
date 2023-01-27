@@ -1,56 +1,77 @@
-const { degrees, PDFDocument, rgb, StandardFonts } = PDFLib ;
-let pdfDoc;
-
-async function loadPdf() {
-     // Fetch an existing PDF document.
-     const url = './resume (1).pdf' ;
-     const existingPdfBytes = await fetch(url).then(res => res.arrayBuffer())
-
-     // Load a `PDFDocument` from the existing PDF bytes.
-     return await PDFDocument.load(existingPdfBytes)
-}
-
-async function addPageToDoc(doc) {
-     const page = doc.addPage()
-     const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman)
-     const { width, height } = page.getSize()
-     const fontSize = 30
-     page.drawText('Adding a page in JavaScript is awesome!', {
-          x: 50,
-          y: height - 4 * fontSize,
-          size: fontSize,
-          font: timesRomanFont,
-          color: rgb(0, 0.53, 0.71),
-     })
-
-     return doc;
-}
-
-async function removePageToDoc(doc) {
-     const totalPages = doc.getPageCount()
-     doc.removePage(totalPages - 1)
-     return doc;
-}
-
-async function saveAndRender(doc) {
-     // Serialize the `PDFDocument` to bytes (a `Uint8Array`).
-     const pdfBytes = await doc.save()
-
-     const pdfDataUri = await doc.saveAsBase64({ dataUri: true });
-     document.getElementById('pdf').src = pdfDataUri;
-}
-
-async function addPage() {
-     pdfDoc = await addPageToDoc(pdfDoc);
-     await saveAndRender(pdfDoc);
-}
-
-async function removePage() {
-     pdfDoc = await removePageToDoc(pdfDoc);
-     await saveAndRender(pdfDoc)
-}
-
-loadPdf().then((doc) => {
-     pdfDoc = doc;
-     return saveAndRender(pdfDoc);
-})
+$(document).ready(function () {
+     $("#resultBlock").hide();
+     $("#errorBlock").hide();
+     $("#result").attr("href", '').html('');
+ });
+  
+ $(document).on("click", "#submit", function () {
+     $("#resultBlock").hide();
+     $("#errorBlock").hide();
+     $("#inlineOutput").text(''); // inline output div
+     $("#status").text(''); // status div
+  
+     var apiKey = $("#apiKey").val().trim(); //Get your API key at https://app.pdf.co
+  
+     var formData = $("#form input[type=file]")[0].files[0]; // file to upload
+     var toType = $("#convertType").val(); // output type
+     var isInline = $("#outputType").val() == "inline"; // if we need output as inline content or link to output file
+ 
+     $("#status").html('Requesting presigned url for upload... &nbsp;&nbsp;&nbsp; <img src="ajax-loader.gif" />');
+ 
+     $.ajax({
+         url: 'https://api.pdf.co/v1/file/upload/get-presigned-url?name=test.pdf&contenttype=application/pdf&encrypt=true',
+         type: 'GET',
+         headers: {'x-api-key': apiKey}, // passing our api key
+         success: function (result) {    
+ 
+             if (result['error'] === false) {
+                 var presignedUrl = result['presignedUrl']; // reading provided presigned url to put our content into
+                 var accessUrl = result['url']; // reading output url that will indicate uploaded file
+ 
+                 $("#status").html('Uploading... &nbsp;&nbsp;&nbsp; <img src="ajax-loader.gif" />');
+ 
+                 $.ajax({
+                     url: presignedUrl, // no api key is required to upload file
+                     type: 'PUT',
+                     headers: {'content-type': 'application/pdf'}, // setting to pdf type as we are uploading pdf file
+                     data: formData,
+                     processData: false,
+                     success: function (result) {                               
+                         
+                         $("#status").html('Processing... &nbsp;&nbsp;&nbsp; <img src="ajax-loader.gif" />');
+ 
+                         $.ajax({
+                             url: 'https://api.pdf.co/v1/pdf/convert/to/'+toType+'?url='+ presignedUrl + '&encrypt=true&inline=' + isInline,
+                             type: 'POST',
+                             headers: {'x-api-key': apiKey},
+                             success: function (result) { 
+ 
+                                 $("#status").text('done converting.');
+ 
+                                 // console.log(JSON.stringify(result));
+                                 
+                                 $("#resultBlock").show();
+ 
+                                 if (isInline)
+                                 {                                    
+                                     $("#inlineOutput").text(result['body']);
+                                 }
+                                 else {
+                                     $("#result").attr("href", result['url']).html(result['url']);
+                                 }
+                                 
+                             }
+                         });
+                 
+ 
+                     },
+                     error: function () {
+                         $("#status").text('error');
+                     }
+                   });                
+         
+ 
+                 }
+             }
+         });
+ });
